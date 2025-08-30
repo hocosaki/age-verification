@@ -1,0 +1,52 @@
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  /* background-color はJSで設定 */
+  backdrop-filter: blur(5px); /* 必要に応じて調整 */
+}
+
+.modal-content {
+  /* background-color はJSで設定 */
+  margin: 15% auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+  /* border-color はJSで設定 */
+  border-width: 1px; /* ボーダーの幅はCSSで定義 */
+  border-style: solid; /* ボーダーのスタイルはCSSで定義 */
+  border-radius: 20px;
+}
+.modal-content h2 {
+  margin-bottom: 20px;
+  font-size: 124%; /* 必要に応じて調整 */
+}
+.modal-content p {
+  /* コンテンツテキストのスタイリングがあればここに追加 */
+  margin-bottom: 20px; /* タイトルとボタンの間隔 */
+}
+.modal-content .btn-wrap {
+  margin-top: 20px;
+}
+.modal-content button {
+  margin: 10px; /* ボタン間の間隔 */
+  padding: 10px 20px; /* ボタンのパディング */
+  font-size: 16px; /* ボタンのフォントサイズ */
+  /* border-color と background-color はJSで設定 */
+  border-width: 1px; /* ボタンのボーダー幅はCSSで定義 */
+  border-style: solid; /* ボタンのボーダータイプはCSSで定義 */
+  border-radius: 10px; /* ボタンの角丸 */
+  cursor: pointer;
+  color: #333; /* ボタンの文字色 - 必要に応じて変更 */
+}
+
+/* ボタンのホバーエフェクトなど */
+.modal-content button:hover {
+  opacity: 0.8;
+}

@@ -1,0 +1,65 @@
+name: Age verification Plugin Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get current version
+        id: get_version
+        run: |
+          PLUGIN_FILE="age-verification.php"
+          VERSION=$(grep -oP '(?<=^ \* Version:\s)[0-9.]+' "$PLUGIN_FILE")
+          echo "Current version is $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.should_release == 'true'
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+
+      - name: Prepare plugin folder
+        run: |
+          mkdir age-verification
+          rsync -av --exclude='.git*' --exclude='.github' ./ age-verification/
+
+      - name: Create ZIP archive
+        id: create_zip
+        run: |
+          zip -r age-verification-${{ steps.get_version.outputs.version }}.zip age-verification
+
+      - name: Create Release
+        if: steps.check_tag.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.get_version.outputs.version }}"
+          name: "Release v${{ steps.get_version.outputs.version }}"
+          body: "This is an automatic release of version ${{ steps.get_version.outputs.version }}."
+          files: |
+            age-verification-${{ steps.get_version.outputs.version }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
